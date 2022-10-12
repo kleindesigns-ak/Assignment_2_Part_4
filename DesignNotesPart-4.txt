@@ -1,0 +1,4 @@
+string is 16 chars long
+
+cast the whole thing by pointer to an integer
+
