@@ -11,16 +11,7 @@
 //                      -> add the secret key
 //                      -> cast the integer back to a string
 //                  * Given         : The secret key is between 1 and 500
-//                  * Conjecture    : Since this will be English, we can assume since the last two chars
-//                                      are the same, it will be a word or phrase that would have two of
-//                                      the same letter at the end.
-//
-//                                    For ex: ball, off, add, app, boo, egg, inn, tee, and mass
-//                                      A good starting point would be to find the difference between
-//                                      ASCII '!' and each of the end letters from the mentioned words
-//                                      as these are likely keys
 // ********************************************************************************************************* //
-
 
 #include <iostream>
 using namespace std;
@@ -29,12 +20,9 @@ using namespace std;
 // /////////////////  FUNCTION PROTOTYPES  /////////////////////
 // /////////////////////////////////////////////////////////////
 
-/*void shift_cypher(const int *startAddress, int key, int *shifted_ints);
-void print_int_arr(int int_arr[]);
-void print_shifted_word(int pInt[], char *message);*/
 void initArray(const char* originalArray, char* resetMe);
-void printArray(char* arrAddress);
-
+void modify_working_message(int * int_ptr_working_message, int key);
+void print_message(char *char_ptr_working_message, int key);
 
 // /////////////////////////////////////////////////////////////
 // /////////////////////  MAIN PROGRAM  ////////////////////////
@@ -42,92 +30,28 @@ void printArray(char* arrAddress);
 
 int main()
 {
-    // Formatting
-    cout <<  endl;
+    // Original original_message
+    const char original_message[17] = {',', 'v', 't', 'a',
+                                       'N', 'm', ' ', 'a',
+                                       '_', '"', 'd', 'a',
+                                       'b', 'p', '!', '!' };        // [17] = 16 elements + \n
+    const char *char_ptr_original_message = &original_message[0];   // Assign location to the pointer
 
-    // Allocations @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+    char working_message[17];
+    char* char_ptr_working_message = &working_message[0];
+    int* int_ptr_working_message = (int *)working_message;
 
-    // Original message
-    const char message[17] =    {',', 'v', 't', 'a', // (Hex) 2C 76 74 61 -> (Dec) 745 960 545
-                                'N', 'm', ' ', 'a',
-                                '_', '"', 'd', 'a',
-                                'b', 'p', '!', '!'};    // [17] = 16 elements + \n
-    const char* message_location = message;               // Assign location to the pointer
-
-    ////////////////////////////////////////////
-    char workingCharArray[17];
-    char* workingCharArray_Location = workingCharArray;
-
-    /*char test = 'a';
-    char* test_ptr = &test;
-
-    cout << *test_ptr << endl;*/
-
-    int key;
-
-    int exit = 0;
-    while (exit == 0)
-    {
-        /*cout << "Enter a key : ";
-        cin >> key;*/
-        key = 12;
-
-        initArray(message_location, workingCharArray_Location);
-
-        int* intArr = (int *)workingCharArray;
-
-        for (int i = 0; i < 4; i++) {
-            *intArr + i = *intArr + key;
-        }
-        cout << endl;
-
-        printArray(workingCharArray_Location);
-
-        // Continue Loop Conditional
-        cout << "Exit? : ";
-        cin >> exit;
+    // Check the output for all possibilities of the decryption key
+    for (int ascii = 0; ascii >= -500; ascii--) {
+        // number between 1 and 500 -> negative because we are decrypting
+        int key = ascii;
+        // Separate array is used to test solutions as to not write over the secret message
+        initArray(char_ptr_original_message, char_ptr_working_message);
+        // Copy of original array is used to test keys
+        modify_working_message(int_ptr_working_message, key);
+        // Print results of each key and the key itself
+        print_message(char_ptr_working_message, key);
     }
-
-
-    ////////////////////////////////////////////
-
-    /*
-    int integer_message[4] =    {0,
-                                 0,
-                                 0,
-                                 0};
-
-    for (int i = 0; i < 4; i++) {
-        integer_message =
-    }
-
-    int shifted_int_message[4] =    {0,
-                                     0,
-                                     0,
-                                     0};
-
-    int key;
-    int exit = 0;
-
-    // Logic @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-
-    while (exit == 0)
-    {
-        cout << "Key? : " ;
-        cin >> key;
-
-        shift_cypher(integer_message, key, shifted_int_message);
-
-        print_int_arr(shifted_int_message);
-
-        message_location = (char *)&shifted_int_message[0];
-        print_shifted_word(shifted_int_message, message_location);
-
-        cout << "Exit? : ";
-        cin >> exit;
-    }
-
-    cout << endl;*/
 
     return 0;
 }
@@ -137,7 +61,6 @@ int main()
 // /////////////////  FUNCTION DEFINITIONS  ////////////////////
 // /////////////////////////////////////////////////////////////
 
-
 void initArray(const char* originalArray, char* resetMe)
 {
     for (int element = 0; element < 17; element++) {
@@ -145,34 +68,21 @@ void initArray(const char* originalArray, char* resetMe)
     }
 }
 
-void printArray(char* arrAddress)
+void modify_working_message(int * int_ptr_working_message, int key)
 {
-    for (int i = 0; i < 16; i++) {
-        cout << arrAddress[i] ;
-    }
-    cout << endl;
-}
+    int* x = int_ptr_working_message;
 
-
-void shift_cypher(const int *startAddress, int key, int *shifted_ints)
-{
-    for (int number = 0; number < 4; number++) {
-        shifted_ints[number] = startAddress[number] + key;
-    }
-}
-
-void print_int_arr(int int_arr[])
-{
     for (int i = 0; i < 4; i++) {
-        cout << int_arr[i] << ' ';
+        x = int_ptr_working_message + i;
+        *x += key;
     }
 }
 
-void print_shifted_word(int pInt[], char *message) {
-    cout << endl;
-    for (int letter = 0; letter < 16; letter++) {
-        cout << *message;
-        message ++;
+void print_message(char *char_ptr_working_message, int key)
+{
+    for (int ch = 0; ch < 16; ch++) {
+        cout << *char_ptr_working_message;
+        char_ptr_working_message ++;
     }
-    cout << endl;
+    cout << key << endl;
 }

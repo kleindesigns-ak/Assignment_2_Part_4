@@ -1,4 +1,8 @@
 string is 16 chars long
 
-cast the whole thing by pointer to an integer
+cast the reference of the start of the char[] to an int*
+shift all 4 ints (16 bytes / each 4 byte int) by whatever the magical key is
+print the char[] byte by byte with the char *
 
+Key = 491
+Attack at dawn!!
